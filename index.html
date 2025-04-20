@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beta Wrench — Porterhouse</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      font-size: 13px;
+      margin: 40px auto;
+      background: #f9f9f9;
+      color: #222;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      max-width: 1000px;
+      gap: 40px;
+    }
+
+    .image-container img {
+      max-width: 300px;
+      height: auto;
+      border-radius: 6px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .player {
+      flex: 1;
+      max-width: 500px;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+      gap: 10px;
+    }
+
+    .controls button {
+      font-size: 12px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .now-playing {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .download-link {
+      margin-top: 20px;
+    }
+
+    .download-link a {
+      text-decoration: none;
+      font-weight: bold;
+      color: #d32f2f;
+    }
+
+    .download-link a:hover {
+      text-decoration: underline;
+    }
+
+    .tracklist {
+      margin-top: 20px;
+    }
+
+    .tracklist ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .tracklist li {
+      padding: 0;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    .tracklist li:hover {
+      text-decoration: underline;
+    }
+
+    .tracklist li.active {
+      font-weight: bold;
+      color: #d32f2f;
+    }
+
+    @media screen and (max-width: 768px) {
+      body {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .image-container img {
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="image-container">
+    <img src="tracks/betawrench.png" alt="Beta Wrench Album Art">
+  </div>
+
+  <div class="player">
+    <audio id="audioPlayer" controls>
+      <source src="tracks/track2.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
+    <div class="controls">
+      <button onclick="prevTrack()">⏮ Prev</button>
+      <button onclick="playPause()">▶️ Play/Pause</button>
+      <button onclick="nextTrack()">⏭ Next</button>
+    </div>
+
+    <div class="now-playing" id="nowPlaying">Now playing: Out All Night</div>
+
+    
+
+    <div class="tracklist">
+      <ul id="trackList"></ul>
+    </div>
+  </div>
+
+  <script>
+    const tracks = [
+      { file: "tracks/track1.mp3", name: "Rent" },
+      { file: "tracks/track2.mp3", name: "Out All Night" },
+      { file: "tracks/track3.mp3", name: "The Dog" },
+      { file: "tracks/track4.mp3", name: "No Punk Intended" },
+      { file: "tracks/track5.mp3", name: "C.I.S.E." },
+      { file: "tracks/track6.mp3", name: "Found To Be Missing" },
+      { file: "tracks/track7.mp3", name: "Sliding Below" },
+      { file: "tracks/track8.mp3", name: "Afforded Madness" },
+      { file: "tracks/track9.mp3", name: "Detox Scholarship" },
+      { file: "tracks/track10.mp3", name: "Fear The Red Light" }
+    ];
+
+    let currentTrack = 1; // Start with Track 2
+    const player = document.getElementById('audioPlayer');
+    const nowPlaying = document.getElementById('nowPlaying');
+    const trackListElement = document.getElementById('trackList');
+
+    // Generate track list
+    tracks.forEach((track, index) => {
+      const li = document.createElement('li');
+      li.textContent = `${index + 1}. ${track.name}`;
+      li.onclick = () => {
+        currentTrack = index;
+        updateTrack();
+      };
+      trackListElement.appendChild(li);
+    });
+
+    function updateTrack() {
+      player.src = tracks[currentTrack].file;
+      nowPlaying.textContent = `Now playing: ${tracks[currentTrack].name}`;
+      highlightActiveTrack();
+      player.play();
+    }
+
+    function nextTrack() {
+      currentTrack = (currentTrack + 1) % tracks.length;
+      updateTrack();
+    }
+
+    function prevTrack() {
+      currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+      updateTrack();
+    }
+
+    function playPause() {
+      if (player.paused) {
+        player.play();
+      } else {
+        player.pause();
+      }
+    }
+
+    function highlightActiveTrack() {
+      const items = trackListElement.querySelectorAll('li');
+      items.forEach((item, index) => {
+        item.classList.toggle('active', index === currentTrack);
+      });
+    }
+
+    // Highlight the starting track
+    highlightActiveTrack();
+
+    // Update "Now playing" when track ends
+    player.addEventListener('ended', nextTrack);
+  </script>
+
+</body>
+</html>
